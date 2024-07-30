@@ -3,7 +3,6 @@
 ![Recycled Waste image](Images/image4.png)
 # IDUMP IMAGE CLASSIFICATION
 
-
 ## BUSINESS OVERVIEW
 
 
@@ -56,7 +55,7 @@ Augmentation of the models ranged from Zoom range, shear range, rotation range, 
 ## DEPLOYMENT
 
  To view the app, click [here](https://waste-image-classification-aklqcaytapmptljr7ywcb4.streamlit.app/) 
- 
+
  To use developer mode, use Password 0000
 
 Upon selection of the best model, we were able to deploy a model app for the classification problem.
@@ -111,6 +110,13 @@ Implementing these models into their city will enhance the beauty of the city as
 
 This project is licensed under the FlatIron License - see the [LICENSE](LICENSE) file for details.
 
+## Project Contributors
+
+| Name            | Github                             | Email                                      |
+|-----------------|------------------------------------|--------------------------------------------|
+| Brian Muthama   | [Github](https://github.com/Muthama42) | [Email](brian.muthama@student.moringaschool.com) |
+| Annabellah Nduta | [Github](https://github.com/Annbellah) | [Email](annbellah.mbungu@student.moringaschool.com) |
+| Harris Lukundi  | [Github](https://github.com/AtomHarris) | [Email](harris.lukundi@student.moringaschool.com) |
 
 
 
