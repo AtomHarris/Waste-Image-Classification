@@ -436,12 +436,17 @@ elif selected == "About":
         st.write("COMING SOON......")
 
 elif selected == "Contact":
-    st.header("DEVELOPER CONTACTS", divider="rainbow")
-    with st.container(border=True):
+    # Include FontAwesome CDN in your app
+    st.markdown('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">', unsafe_allow_html=True)
+    st.header("DEVELOPER CONTACTS", divider=True)
+    with st.container(border= True):
         col1, col2, col3 = st.columns(3)
         with col1:
-            st.write("Annabellah Mbungu   \nannbellah.mbungu@student.moringaschool.com     \nNumber:  ")
+            with st.container(border= True):
+                st.markdown('<i class="fas fa-user"></i> Annabellah Mbungu<br>[Email](mailto:annabellah.mbungu@student.moringaschool.com)<br>[Github](https://github.com/Muthama42)', unsafe_allow_html=True)
         with col2:
-            st.write("Brian Muthama  \nbrian.muthama@student.moringaschool.com   \nNumber:  ")
+            with st.container(border= True):
+                st.markdown('<i class="fas fa-user"></i> Brian Muthama<br>[Email](mailto:brian.muthama@student.moringaschool.com)<br>[Github](https://github.com/Annbellah)', unsafe_allow_html=True)
         with col3:
-            st.write("Harris Lukundi  \nharris.lukundi@student.moringaschool.com  \nNumber:  ")
+            with st.container(border= True):
+                st.markdown('<i class="fas fa-user"></i> Harris Lukundi<br>[Email](mailto:harris.lukundi@student.moringaschool.com)<br>[Github](https://github.com/AtomHarris)', unsafe_allow_html=True)
