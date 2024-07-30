@@ -55,6 +55,8 @@ Augmentation of the models ranged from Zoom range, shear range, rotation range, 
 
 ## DEPLOYMENT
 
+ To view the app, click [here](https://waste-image-classification.streamlit.app/) 
+
 Upon selection of the best model, we were able to deploy a model app for the classification problem.
 
 ![home](Images/deploy1.png)
@@ -72,6 +74,24 @@ A selectbox introduced a means to add that misclassified image to the training d
 ![developer mode](Images/deploy4.png)
 
 
+## INSTALLATION AND USAGE
+1. Clone the repository
+    ```sh
+    git clone https://github.com/your-username/waste-image-classification.git
+    ```
+2. Navigate to the project directory
+    ```sh
+    cd waste-image-classification
+    ```
+3. Install dependencies
+    ```sh
+    pip install -r requirements.txt
+    ```
+4. Execute the app on streamlit
+To run the application, execute:
+    ```sh
+    streamlit run app.py 
+    ```
 ## RESULTS AND CONCLUSIONS
 
 **Results**
@@ -84,6 +104,12 @@ This project provided a robust predictive model with continous model learning le
 Continuous updates and refinements are important to ensure the model remains accurate in predicting the waste in the city.
 
 Implementing these models into their city will enhance the beauty of the city as well as improve the quality of life of its residents. 
+
+## LICENSE
+
+This project is licensed under the FlatIron License - see the [LICENSE](LICENSE) file for details.
+
+
 
 
 
