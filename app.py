@@ -12,7 +12,7 @@ from tensorflow.keras.regularizers import l2
 from streamlit_option_menu import option_menu
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.callbacks import ModelCheckpoint, ReduceLROnPlateau
-
+#st.set_page_config(layout="wide")
 # Function to load images from a pickled file
 @st.cache_data
 def load_pickled_images(file_path):
@@ -186,6 +186,7 @@ if selected == "Home":
                         cols = st.sidebar.columns(num_columns)
                         for idx, (image, filename) in enumerate(zip(selected_images, class_names)):
                             col = cols[idx % num_columns]
+                            image=image.replace("\\","/")
                             col.image(image, caption=filename, use_column_width=True)
                     else:
                         st.sidebar.warning('No pickled files found in the specified folder.')
