@@ -55,7 +55,9 @@ Augmentation of the models ranged from Zoom range, shear range, rotation range, 
 
 ## DEPLOYMENT
 
- To view the app, click [here](https://waste-image-classification.streamlit.app/) 
+ To view the app, click [here](https://waste-image-classification-aklqcaytapmptljr7ywcb4.streamlit.app/) 
+ 
+ To use developer mode, use Password 0000
 
 Upon selection of the best model, we were able to deploy a model app for the classification problem.
 
