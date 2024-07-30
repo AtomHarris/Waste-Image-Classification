@@ -38,17 +38,15 @@ def predict(image):
 
 # Function to move misclassified image to the correct folder
 def move_image_to_correct_folder(image, correct_class):
-    
     # Create a unique filename using UUID
     unique_filename = f"{uuid.uuid4().hex}.jpg"
-    
     # Create the full path where the image will be saved
     image_path = os.path.join('RealWaste2/train', correct_class, unique_filename)
-    
     # Save the image to the specified path
     image.save(image_path)
-    
-    st.success(f"Image moved to {correct_class} folder")
+    print(st.success(f"Image moved to {correct_class} folder"))
+
+    return correct_class
 
 # Function to retrain the model
 def retrain_model():
@@ -155,6 +153,14 @@ selected = st.sidebar.selectbox("Go to", ["Home", "About", "Contact"])
 # Path to your pickled images folder
 pickled_images_folder = 'Pickle_files/images'
 
+# Initialize session state for material handling instructions
+if 'instructions' not in st.session_state:
+    st.session_state.instructions = {
+        'compost': "Instructions to be given by customer",
+        'recycle': "Instructions to be given by customer",
+        'trash': "Instructions to be given by customer"
+    }
+
 # Main Home Classification Page
 if selected == "Home":
 
@@ -250,22 +256,26 @@ if selected == "Home":
                                 with col1:
                                     st.image('Images/Compost.jpg', width=120)
                                 with col2:
-                                    st.write('Divertible Organics: From which energy and fertilizer can be derived')
-                            elif label in ['Glass', 'Paper', 'Metal', 'Plastic']:
+                                    st.write('Divertible Organics')
+                                st.write(st.session_state.instructions['compost'])
+                            elif label in ['Glass', 'Metal', 'Paper', 'Plastic']:
                                 col1, col2 = st.columns(2)
                                 with col1:
                                     st.image('Images/Recycle.jpg', width=120)
                                 with col2:
-                                    st.write("Recyclable Inorganics: Fit for repurposing")
+                                    st.write('Divertible Recyclables')
+                                st.write(st.session_state.instructions['recycle'])
                             else:
                                 col1, col2 = st.columns(2)
                                 with col1:
                                     st.image('Images/Trash.jpg', width=120)
                                 with col2:
-                                    st.write("Inorganic Materials: Requiring Landfill ")
+                                    st.write('Residuals')
+                                st.write(st.session_state.instructions['trash'])
 
+                            
                         except Exception as e:
-                            st.error(f"An error occurred during prediction: {e}")
+                            st.write(f"Error: {e}")
             with st.container(border=True):
                 if st.session_state.last_uploaded_image:
                     st.write("Was the Image Classified Correctly?")
@@ -274,117 +284,146 @@ if selected == "Home":
                         st.success("Classification correct")
                     elif choice == "👎 No":
                         st.session_state.wrongly_classified_image = st.session_state.last_uploaded_image
-                        st.warning("Misclassified image has been moved to 'Developer Mode' for further action.")
+                        st.warning("Misclassified image has been moved to 'Developer Mode' for further action.")                
 
-    # Material Handling Page
     elif selected1 == "Material Handling":
-        
-        st.title("Material Handling Guidelines:")
+        st.write("<h1 style='text-align: center;'>Material Handling Guidelines</h1>", unsafe_allow_html=True)
 
-        st.header("Compost Procedures", divider=True)
+        st.subheader('Compost Instructions', divider=True)
         col1, col2 = st.columns(2)
         with col1:
             st.image('Images/Compost.jpg', width=120)
         with col2:
             st.write('Divertible Organics:')
             st.write('From which energy and fertilizer can be derived')
-        st.write("Instructions to be given by customer")
+        st.write(st.session_state.instructions['compost'])
 
-        st.header("Recycle Procedures", divider=True)
+        st.subheader('Recycle Instructions', divider=True)
         col1, col2 = st.columns(2)
         with col1:
             st.image('Images/Recycle.jpg', width=120)
         with col2:
             st.write("Recyclable Inorganics:")
             st.write("Fit for repurposing")
-        st.write("Instructions to be given by customer")
+        st.write(st.session_state.instructions['recycle'])
 
-        st.header("Trash Procedures", divider=True)
+        st.subheader('Trash Instructions', divider=True)
         col1, col2 = st.columns(2)
         with col1:
             st.image('Images/Trash.jpg', width=120)
         with col2:
             st.write("Inorganic Materials:")
             st.write("Requiring Landfill")
-        st.write("Instructions to be given by customer")
+        st.write(st.session_state.instructions['trash'])
 
-    # Developer Mode Page
     elif selected1 == "Developer Mode":
-        PASSWORD = "0000"
+        with st.container(border=True): 
+            PASSWORD = "0000"
 
-        # Initialize session state for access control
-        if 'access_granted' not in st.session_state:
-            st.session_state.access_granted = False
+            # Initialize session state for access control
+            if 'access_granted' not in st.session_state:
+                st.session_state.access_granted = False
 
-        if not st.session_state.access_granted:
-            # Password input section
-            st.header("Developer Mode", divider="rainbow")
-            password = st.text_input("Enter password to access Developer Mode:", type="password")
+            if not st.session_state.access_granted:
+                # Password input section
+                st.header("Developer Mode", divider="rainbow")
+                password = st.text_input("Enter password to access Developer Mode:", type="password")
 
-            if st.button("Enter"):
-                if password == PASSWORD:
-                    st.session_state.access_granted = True
-                    st.success("Password correct. Access granted.")
-                else:
-                    st.error("Incorrect password. Please try again.")
-        else:
-            # Content for Developer Mode
-            st.header("Developer Mode Content", divider="rainbow")
+                if st.button("Enter"):
+                    if password == PASSWORD:
+                        st.session_state.access_granted = True
+                        st.success("Password correct. Access granted.")
+                        st.experimental_rerun() 
+                    else:
+                        st.error("Incorrect password. Please try again.")
+            else:
+                selected2 = option_menu(
+                            menu_title=None,
+                            options=["Teach Mode","Instructions Mode"],
+                            icons=["bookmark", "pencil-square"],
+                            menu_icon="cast",
+                            default_index=0,
+                            orientation="horizontal",
+                        )
 
-            # Initialize corrected_images in session state if not already present
-            if 'corrected_images' not in st.session_state:
-                st.session_state.corrected_images = []
+                if selected2=="Teach Mode":           
+                    # Content for Developer Mode
+                    st.header("Developer Mode Content", divider="rainbow")
 
-            # Function to handle image selection and class correction
-            def handle_image_correction():
-                if 'wrongly_classified_image' in st.session_state and st.session_state.wrongly_classified_image:
-                    col1, col2 = st.columns(2)  
-                    with col1:
-                        image = st.session_state.wrongly_classified_image
-                        st.image(image, caption="Wrongly Classified Image", use_column_width=True)
-                    with col2:
-                        class_names = ['Food Organics', 'Glass', 'Metal', 'Miscellaneous Trash', 'Paper', 'Plastic', 'Textile Trash', 'Vegetation']
-                        correct_class = st.selectbox("Select the correct class:", class_names)
-                        if st.button("Confirm Correction"):
-                            if correct_class:
-                                move_image_to_correct_folder(image, correct_class)
-                                
-                                st.session_state.corrected_images.insert(0,image)
-                                # Refresh the container with the latest images
-                                st.experimental_rerun()
+                    # Initialize corrected_images in session state if not already present
+                    if 'corrected_images' not in st.session_state:
+                        st.session_state.corrected_images = []
 
-                        st.warning('WARNING', icon="⚠️")
-                        st.subheader("ACTION TAKES TIME!!!", divider= True)
+                    # Function to handle image selection and class correction
+                    def handle_image_correction():
+                        if 'wrongly_classified_image' in st.session_state and st.session_state.wrongly_classified_image:
+                            col1, col2 = st.columns(2, vertical_alignment="center")  
+                            with col1:
+                                image = st.session_state.wrongly_classified_image
+                                st.image(image, caption="Wrongly Classified Image", use_column_width=True)
+                            with col2:
+                                class_names = ['Food Organics', 'Glass', 'Metal', 'Miscellaneous Trash', 'Paper', 'Plastic', 'Textile Trash', 'Vegetation']
+                                correct_class = st.selectbox("Select the correct class:", class_names)
+                                if st.button("Confirm Correction"):
+                                    if correct_class:
+                                        moved_class=move_image_to_correct_folder(image, correct_class)
+                                        
+                                        st.session_state.corrected_images.insert(0,image)
+                                        st.write(f"Moved to {moved_class} folder")
 
-                        # Placing a  "TEACH" button in the same column as the selectbo
-                        if st.session_state.corrected_images:
-                            if st.button("TEACH"):
-                                st.write("Kindly Be Patient......")
-                                st.write("This will take up to an hour!!!")
-                                retrain_model()
-                                # Clear the corrected images after retraining
-                                st.session_state.corrected_images.clear()
+                                        # Refresh the container with the latest images
+                                        st.experimental_rerun()
+
+                                st.warning('WARNING:  \nTEACH ACTION TAKES TIME!!!', icon="⚠️")
+                                #st.write("TEACH ACTION TAKES TIME!!!", divider= True)
+
+                                # Placing a  "TEACH" button in the same column as the selectbo
+                                #if st.session_state.corrected_images:
+                                if st.button("TEACH",  key="teach-button"):    
+                                    st.write("Training model has begun!")                           
+                                    st.write("Kindly Be Patient......")
+                                    st.write("This will take up to an hour!!!")
+                                    retrain_model()
+                                    # Clear the corrected images after retraining
+                                    st.session_state.corrected_images.clear()
+                            
                         else:
-                            st.warning("No corrected images to use for retraining.")
-                else:
-                    st.write("No wrongly classified image to correct.")
+                            st.write("No wrongly classified image to correct.")
 
 
-            # Call the function to handle image correction
-            handle_image_correction()
+                    # Call the function to handle image correction
+                    handle_image_correction()
 
-            # Container for displaying the latest corrected images
-            with st.container():
-                if st.session_state.corrected_images:
-                    st.subheader("IMAGES TO TEACH", divider="rainbow")
-                    num_columns = 4
-                    cols = st.columns(num_columns)
-                    for idx, image in enumerate(st.session_state.corrected_images):
-                        col = cols[idx % num_columns]
-                        col.image(image, use_column_width=True)
-                        
+                    # Container for displaying the latest corrected images
+                    with st.container():
+                        if st.session_state.corrected_images:
+                            st.subheader("Images To Teach", divider="rainbow")
+                            num_columns = 5
+                            cols = st.columns(num_columns)
+                            for idx, image in enumerate(st.session_state.corrected_images):
+                                col = cols[idx % num_columns]
+                                col.image(image, use_column_width=True)
+                if selected2=="Instructions Mode":
+                    st.header("Instruction Mode Content", divider="rainbow")
+                    with st.container(border= True):    
+                        st.write("Update the section required:")          
+                        with st.expander("Compost Instructions"):
+                            compost_instructions = st.text_area("Edit Compost Instructions", st.session_state.instructions['compost'])
+                            if st.button("Update Compost Instructions"):
+                                st.session_state.instructions['compost'] = compost_instructions
+                                st.success("Compost instructions updated successfully!")
 
+                        with st.expander("Recycle Instructions"):
+                            recycle_instructions = st.text_area("Edit Recycle Instructions", st.session_state.instructions['recycle'])
+                            if st.button("Update Recycle Instructions"):
+                                st.session_state.instructions['recycle'] = recycle_instructions
+                                st.success("Recycle instructions updated successfully!")
 
+                        with st.expander("Trash Instructions"):
+                            trash_instructions = st.text_area("Edit Trash Instructions", st.session_state.instructions['trash'])
+                            if st.button("Update Trash Instructions"):
+                                st.session_state.instructions['trash'] = trash_instructions
+                                st.success("Trash instructions updated successfully!")
 elif selected == "About":
     tab1, tab2 = st.tabs(["Software Used", "Hardware Used"])
 
