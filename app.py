@@ -1,5 +1,6 @@
 import os
 import time
+import uuid
 import pickle
 import random
 import numpy as np
@@ -14,6 +15,16 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.callbacks import ModelCheckpoint, ReduceLROnPlateau
 import uuid
 
+st.set_page_config(
+    page_title="IDump Classification App",
+    page_icon="🧊",
+    initial_sidebar_state="expanded",
+    menu_items={
+        'Get Help': 'https://github.com/AtomHarris/Waste-Image-Classification',
+        'Report a bug': 'https://github.com/AtomHarris/Waste-Image-Classification',
+        'About': "# Here to help with all your waste issues!"
+    }
+)
 # Function to load images from a pickled file
 @st.cache_data
 def load_pickled_images(file_path):
@@ -256,21 +267,21 @@ if selected == "Home":
                                 with col1:
                                     st.image('Images/Compost.jpg', width=120)
                                 with col2:
-                                    st.write('Divertible Organics')
+                                    st.write('Divertible Organics:  \nFrom which energy and fertilizer can be derived')
                                 st.write(st.session_state.instructions['compost'])
                             elif label in ['Glass', 'Metal', 'Paper', 'Plastic']:
                                 col1, col2 = st.columns(2)
                                 with col1:
                                     st.image('Images/Recycle.jpg', width=120)
                                 with col2:
-                                    st.write('Divertible Recyclables')
+                                    st.write('Recyclable Inorganics:  \nFit for repurposing')
                                 st.write(st.session_state.instructions['recycle'])
                             else:
                                 col1, col2 = st.columns(2)
                                 with col1:
                                     st.image('Images/Trash.jpg', width=120)
                                 with col2:
-                                    st.write('Residuals')
+                                    st.write('Inorganic Materials:  \nRequiring Landfill ')
                                 st.write(st.session_state.instructions['trash'])
 
                             
@@ -424,6 +435,13 @@ if selected == "Home":
                             if st.button("Update Trash Instructions"):
                                 st.session_state.instructions['trash'] = trash_instructions
                                 st.success("Trash instructions updated successfully!")
+                
+                # Adding Exit button for Developer Mode
+                st.subheader("Exit Developer Mode", divider= True)
+                if st.button("EXIT"):
+                    st.session_state.access_granted = False
+                    st.experimental_rerun()
+                
 elif selected == "About":
     tab1, tab2 = st.tabs(["Software Used", "Hardware Used"])
 
