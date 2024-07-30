@@ -147,7 +147,7 @@ def retrain_model():
 # Load the pre-trained model from the .pkl file
 @st.cache_resource
 def load_model():
-    with open('Pickle_files/models/resnet50.pkl', 'rb') as file:
+    with open('Pickle_files/models/model.pkl', 'rb') as file:
         return pickle.load(file)
 
 model = load_model()
@@ -268,21 +268,21 @@ if selected == "Home":
                                     st.image('Images/Compost.jpg', width=120)
                                 with col2:
                                     st.write('Divertible Organics:  \nFrom which energy and fertilizer can be derived')
-                                st.write(st.session_state.instructions['compost'])
+                                #st.write(st.session_state.instructions['compost'])
                             elif label in ['Glass', 'Metal', 'Paper', 'Plastic']:
                                 col1, col2 = st.columns(2)
                                 with col1:
                                     st.image('Images/Recycle.jpg', width=120)
                                 with col2:
                                     st.write('Recyclable Inorganics:  \nFit for repurposing')
-                                st.write(st.session_state.instructions['recycle'])
+                                #st.write(st.session_state.instructions['recycle'])
                             else:
                                 col1, col2 = st.columns(2)
                                 with col1:
                                     st.image('Images/Trash.jpg', width=120)
                                 with col2:
                                     st.write('Inorganic Materials:  \nRequiring Landfill ')
-                                st.write(st.session_state.instructions['trash'])
+                                #st.write(st.session_state.instructions['trash'])
 
                             
                         except Exception as e:
@@ -298,34 +298,37 @@ if selected == "Home":
                         st.warning("Misclassified image has been moved to 'Developer Mode' for further action.")                
 
     elif selected1 == "Material Handling":
-        st.write("<h1 style='text-align: center;'>Material Handling Guidelines</h1>", unsafe_allow_html=True)
+        st.header("Material Handling Guidelines", divider=True)
+        with st.container(border= True):
+            st.subheader('Compost Instructions', divider=True)
+            col1, col2 = st.columns(2)
+            with col1:
+                st.image('Images/Compost.jpg', width=120)
+            with col2:
+                st.write('Divertible Organics:')
+                st.write('From which energy and fertilizer can be derived')
+            with st.container(border= True):
+                st.write(st.session_state.instructions['compost'])
 
-        st.subheader('Compost Instructions', divider=True)
-        col1, col2 = st.columns(2)
-        with col1:
-            st.image('Images/Compost.jpg', width=120)
-        with col2:
-            st.write('Divertible Organics:')
-            st.write('From which energy and fertilizer can be derived')
-        st.write(st.session_state.instructions['compost'])
+            st.subheader('Recycle Instructions', divider=True)
+            col1, col2 = st.columns(2)
+            with col1:
+                st.image('Images/Recycle.jpg', width=120)
+            with col2:
+                st.write("Recyclable Inorganics:")
+                st.write("Fit for repurposing")
+            with st.container(border= True):
+                st.write(st.session_state.instructions['recycle'])
 
-        st.subheader('Recycle Instructions', divider=True)
-        col1, col2 = st.columns(2)
-        with col1:
-            st.image('Images/Recycle.jpg', width=120)
-        with col2:
-            st.write("Recyclable Inorganics:")
-            st.write("Fit for repurposing")
-        st.write(st.session_state.instructions['recycle'])
-
-        st.subheader('Trash Instructions', divider=True)
-        col1, col2 = st.columns(2)
-        with col1:
-            st.image('Images/Trash.jpg', width=120)
-        with col2:
-            st.write("Inorganic Materials:")
-            st.write("Requiring Landfill")
-        st.write(st.session_state.instructions['trash'])
+            st.subheader('Trash Instructions', divider=True)
+            col1, col2 = st.columns(2)
+            with col1:
+                st.image('Images/Trash.jpg', width=120)
+            with col2:
+                st.write("Inorganic Materials:")
+                st.write("Requiring Landfill")
+            with st.container(border= True):
+                st.write(st.session_state.instructions['trash'])
 
     elif selected1 == "Developer Mode":
         with st.container(border=True): 
