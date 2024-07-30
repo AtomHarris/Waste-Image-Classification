@@ -12,7 +12,8 @@ from tensorflow.keras.regularizers import l2
 from streamlit_option_menu import option_menu
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.callbacks import ModelCheckpoint, ReduceLROnPlateau
-#st.set_page_config(layout="wide")
+import uuid
+
 # Function to load images from a pickled file
 @st.cache_data
 def load_pickled_images(file_path):
@@ -35,10 +36,18 @@ def predict(image):
     predicted_label = class_names[predicted_class[0]]
     return predicted_label, predictions[0][predicted_class[0]]
 
-# Function to move misclassified image to correct folder
+# Function to move misclassified image to the correct folder
 def move_image_to_correct_folder(image, correct_class):
-    image_path = os.path.join('RealWaste2/train', correct_class, 'corrected_image.jpg')
+    
+    # Create a unique filename using UUID
+    unique_filename = f"{uuid.uuid4().hex}.jpg"
+    
+    # Create the full path where the image will be saved
+    image_path = os.path.join('RealWaste2/train', correct_class, unique_filename)
+    
+    # Save the image to the specified path
     image.save(image_path)
+    
     st.success(f"Image moved to {correct_class} folder")
 
 # Function to retrain the model
@@ -60,7 +69,7 @@ def retrain_model():
 
     train_data = train_generator.flow_from_directory(
         'RealWaste2/train',
-        target_size=(224, 224),  
+        target_size=(224, 224),
         color_mode='rgb',
         class_mode='categorical',
         batch_size=32,
@@ -81,8 +90,8 @@ def retrain_model():
     y_train = train_data.classes
 
     cls_wt = class_weight.compute_class_weight(
-        class_weight='balanced', 
-        classes=np.unique(y_train), 
+        class_weight='balanced',
+        classes=np.unique(y_train),
         y=y_train
     )
 
@@ -135,7 +144,7 @@ def load_model():
 model = load_model()
 
 # Class names
-class_names = ['Food Organics','Glass','Metal','Miscellaneous Trash','Paper','Plastic','Textile Trash','Vegetation']
+class_names = ['Food Organics', 'Glass', 'Metal', 'Miscellaneous Trash', 'Paper', 'Plastic', 'Textile Trash', 'Vegetation']
 
 # Company Logo
 st.sidebar.image('Images/image4.png', use_column_width=True)
@@ -152,14 +161,14 @@ if selected == "Home":
     # Function to randomly select one image from a list
     def select_one_image(images):
         return random.choice(images)
-    
+
     # Home Page Option Menu Initialization
     selected1 = option_menu(
-        menu_title=None,  
-        options=["Home", "Material Handling", "Developer Mode"],  
-        icons=["house", "file-earmark", "tools"],  
-        menu_icon="cast",  
-        default_index=0,  
+        menu_title=None,
+        options=["Home", "Material Handling", "Developer Mode"],
+        icons=["house", "file-earmark", "tools"],
+        menu_icon="cast",
+        default_index=0,
         orientation="horizontal",
     )
     # Home Classification Page
@@ -186,16 +195,14 @@ if selected == "Home":
                         cols = st.sidebar.columns(num_columns)
                         for idx, (image, filename) in enumerate(zip(selected_images, class_names)):
                             col = cols[idx % num_columns]
-                            image=image.replace("\\","/")
+                            image = image.replace("\\", "/")
                             col.image(image, caption=filename, use_column_width=True)
                     else:
                         st.sidebar.warning('No pickled files found in the specified folder.')
                 else:
                     st.sidebar.error(f'The directory "{pickled_images_folder}" does not exist. Please check the path and try again.')
 
-            
             uploaded_files = st.file_uploader("Choose images", type=['jpg', 'png', 'jpeg'], accept_multiple_files=True)
-             #uploaded_files = st.camera_input("Choose images")
 
             image_details = []
 
@@ -203,21 +210,21 @@ if selected == "Home":
                 st.session_state.last_uploaded_image = None
 
             col1, col2 = st.columns(2, gap="small")
-            
+
             with col1:
                 with st.container(border=True):
                     if uploaded_files:
-                        image = Image.open(uploaded_files[-1])  
+                        image = Image.open(uploaded_files[-1])
                         st.session_state.last_uploaded_image = image
-                        
-                        st.image(image, width=280)
-                        
-                        image_details.append({  
+
+                        st.image(image, use_column_width=True)
+
+                        image_details.append({
                             'Filename': uploaded_files[-1].name,
                             'Width': image.width,
                             'Height': image.height
                         })
-                        
+
                         if image_details:
                             df = pd.DataFrame(image_details)
                             df.set_index("Filename", inplace=True)
@@ -227,13 +234,13 @@ if selected == "Home":
                 with st.container(border=True):
                     if st.session_state.last_uploaded_image:
                         with st.spinner('Classifying...'):
-                            time.sleep(2)  
-                        
+                            time.sleep(2)
+
                         st.success('Done!')
-                        
+
                         try:
                             label, confidence = predict(st.session_state.last_uploaded_image)
-                            
+
                             st.write(f"PREDICTED CLASS: {label}")
                             st.write(f"CONFIDENCE: {confidence * 100:.2f}%")
 
@@ -259,18 +266,19 @@ if selected == "Home":
 
                         except Exception as e:
                             st.error(f"An error occurred during prediction: {e}")
-
-            with st.container(border=True):    
+            with st.container(border=True):
                 if st.session_state.last_uploaded_image:
                     st.write("Was the Image Classified Correctly?")
-                    choice = st.radio("", ("Select an Option","👍 Yes", "👎 No"), index=0)
+                    choice = st.radio("", ("Select an Option", "👍 Yes", "👎 No"), index=0)
                     if choice == "👍 Yes":
                         st.success("Classification correct")
                     elif choice == "👎 No":
                         st.session_state.wrongly_classified_image = st.session_state.last_uploaded_image
                         st.warning("Misclassified image has been moved to 'Developer Mode' for further action.")
 
+    # Material Handling Page
     elif selected1 == "Material Handling":
+        
         st.title("Material Handling Guidelines:")
 
         st.header("Compost Procedures", divider=True)
@@ -300,24 +308,82 @@ if selected == "Home":
             st.write("Requiring Landfill")
         st.write("Instructions to be given by customer")
 
+    # Developer Mode Page
     elif selected1 == "Developer Mode":
-        st.title("Developer Mode")
-        with st.container(border=True):
-            if 'wrongly_classified_image' in st.session_state and st.session_state.wrongly_classified_image:
-                col1, col2= st.columns(2)
-                with col1:
-                    image = st.session_state.wrongly_classified_image
-                    st.image(image, caption="Wrongly Classified Image", use_column_width=True)
-                    class_names = ['Food Organics','Glass','Metal','Miscellaneous Trash','Paper','Plastic','Textile Trash','Vegetation']
-                with col2:
-                    correct_class = st.selectbox("Select the correct class:", class_names)
-                    if st.button("Confirm Correction"):
-                        if correct_class:
-                            move_image_to_correct_folder(image, correct_class) 
+        PASSWORD = "0000"
+
+        # Initialize session state for access control
+        if 'access_granted' not in st.session_state:
+            st.session_state.access_granted = False
+
+        if not st.session_state.access_granted:
+            # Password input section
+            st.header("Developer Mode", divider="rainbow")
+            password = st.text_input("Enter password to access Developer Mode:", type="password")
+
+            if st.button("Enter"):
+                if password == PASSWORD:
+                    st.session_state.access_granted = True
+                    st.success("Password correct. Access granted.")
+                else:
+                    st.error("Incorrect password. Please try again.")
+        else:
+            # Content for Developer Mode
+            st.header("Developer Mode Content", divider="rainbow")
+
+            # Initialize corrected_images in session state if not already present
+            if 'corrected_images' not in st.session_state:
+                st.session_state.corrected_images = []
+
+            # Function to handle image selection and class correction
+            def handle_image_correction():
+                if 'wrongly_classified_image' in st.session_state and st.session_state.wrongly_classified_image:
+                    col1, col2 = st.columns(2)  
+                    with col1:
+                        image = st.session_state.wrongly_classified_image
+                        st.image(image, caption="Wrongly Classified Image", use_column_width=True)
+                    with col2:
+                        class_names = ['Food Organics', 'Glass', 'Metal', 'Miscellaneous Trash', 'Paper', 'Plastic', 'Textile Trash', 'Vegetation']
+                        correct_class = st.selectbox("Select the correct class:", class_names)
+                        if st.button("Confirm Correction"):
+                            if correct_class:
+                                move_image_to_correct_folder(image, correct_class)
+                                
+                                st.session_state.corrected_images.insert(0,image)
+                                # Refresh the container with the latest images
+                                st.experimental_rerun()
+
+                        st.warning('WARNING', icon="⚠️")
+                        st.subheader("ACTION TAKES TIME!!!", divider= True)
+
+                        # Placing a  "TEACH" button in the same column as the selectbo
+                        if st.session_state.corrected_images:
                             if st.button("TEACH"):
                                 st.write("Kindly Be Patient......")
                                 st.write("This will take up to an hour!!!")
                                 retrain_model()
+                                # Clear the corrected images after retraining
+                                st.session_state.corrected_images.clear()
+                        else:
+                            st.warning("No corrected images to use for retraining.")
+                else:
+                    st.write("No wrongly classified image to correct.")
+
+
+            # Call the function to handle image correction
+            handle_image_correction()
+
+            # Container for displaying the latest corrected images
+            with st.container():
+                if st.session_state.corrected_images:
+                    st.subheader("IMAGES TO TEACH", divider="rainbow")
+                    num_columns = 4
+                    cols = st.columns(num_columns)
+                    for idx, image in enumerate(st.session_state.corrected_images):
+                        col = cols[idx % num_columns]
+                        col.image(image, use_column_width=True)
+                        
+
 
 elif selected == "About":
     tab1, tab2 = st.tabs(["Software Used", "Hardware Used"])
@@ -331,11 +397,11 @@ elif selected == "About":
         st.write("COMING SOON......")
 
 elif selected == "Contact":
-    st.header("DEVELOPER CONTACTS", divider= "rainbow")
-    with st.container(border= True):
+    st.header("DEVELOPER CONTACTS", divider="rainbow")
+    with st.container(border=True):
         col1, col2, col3 = st.columns(3)
         with col1:
-            st.write("Annabellah Mbungu   \nannbellah.mbungu@student.moringaschool.com     \nNumber:  ")  
+            st.write("Annabellah Mbungu   \nannbellah.mbungu@student.moringaschool.com     \nNumber:  ")
         with col2:
             st.write("Brian Muthama  \nbrian.muthama@student.moringaschool.com   \nNumber:  ")
         with col3:
