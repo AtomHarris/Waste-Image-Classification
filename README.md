@@ -110,7 +110,7 @@ Implementing these models into their city will enhance the beauty of the city as
 
 This project is licensed under the FlatIron License - see the [LICENSE](LICENSE) file for details.
 
-## Project Contributors
+## PROJECT CONTRIBUTORS
 
 | Name            | Github                             | Email                                      |
 |-----------------|------------------------------------|--------------------------------------------|
